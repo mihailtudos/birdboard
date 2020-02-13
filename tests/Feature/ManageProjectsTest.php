@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Project;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -48,7 +49,7 @@ class ManageProjectsTest extends TestCase
      /** @test */
     public function a_user_can_create_a_project()
     {   //disable error handling
-        $this->withoutExceptionHandling();
+        //$this->withoutExceptionHandling();
 
         //get a signed in user
         $this->signeIn();
@@ -63,8 +64,14 @@ class ManageProjectsTest extends TestCase
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
         ];
+
+
         //if I submit a post request with to the specified address and send the attributes
-        $this->post('/projects', $attributes)->assertRedirect('/projects');
+        $response = $this->post('/projects', $attributes);
+
+        $project = Project::where($attributes)->first();
+
+         $response->assertRedirect($project->path());
 
         //I should have a database record containing the attributes send at previous step
         $this->assertDatabaseHas('projects', $attributes);

@@ -9,7 +9,8 @@ class ProjectsController extends Controller
 {
     public function index()
     {
-        $projects = auth()->user()->projects;
+        $projects = auth()->user()->projects()->orderBy('created_at', 'desc')->get();
+
 
         return view('projects.index', compact('projects'));
     }
@@ -38,11 +39,11 @@ class ProjectsController extends Controller
 
         //persist
 
-        auth()->user()->projects()->create($attributes);
+        $project = auth()->user()->projects()->create($attributes);
 
 
         //redirect
-        return redirect('/projects');
+        return redirect( $project->path());
     }
 
 

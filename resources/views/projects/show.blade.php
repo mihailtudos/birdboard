@@ -18,13 +18,30 @@
                 <div class="mb-10">
                     <h2 class="text-gray-600 text-lg font-normal mb-3" >Tasks</h2>
 
-                    @forelse($project->tasks as $task)
+                    @foreach($project->tasks as $task)
                         <div class="card mb-4">
-                            {{ $task->body }}
+                            <form method="post" action="{{$task->path()}}">
+                                @method('PATCH')
+                                @csrf
+
+                                <div class="flex items-end">
+                                    <input class="w-full mr-4 {{$task->completed ? 'text-green-500 ' : ''}}" type="text" name="body" id="body" value="{{ $task->body }}" >
+                                    <input type="checkbox" class="form-checkbox" name="completed" id="completed" onChange="this.form.submit()" {{$task->completed ? 'checked' : ''}}>
+                                </div>
+                            </form>
+
                         </div>
-                    @empty
-                        <div class="card mb-4">Tasks are yet to come</div>
-                    @endforelse
+                    @endforeach
+                    <div class="card mb-4">
+                        <form action="{{ $project->path().'/tasks' }}" method="post">
+                            @csrf
+                            <div class="flex">
+                                <input type="text" name="body" id="body" class="w-full mr-4 rounded border-solid border-2 border-green-500" placeholder="Add task">
+                                <button type="submit" class="button">Add</button>
+                            </div>
+
+                        </form>
+                    </div>
 
                 </div>
                 {{-- Tasks --}}
