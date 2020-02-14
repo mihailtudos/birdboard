@@ -12,6 +12,7 @@ $factory->define(Project::class, function (Faker $faker) {
         'description' => $faker->paragraph(8),
         'owner_id'=> function() {
             return factory(App\User::class)->create()->id;
-    }
+    },
+        'notes' => $faker->sentence,
     ];
 });

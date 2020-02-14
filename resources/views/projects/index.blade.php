@@ -23,7 +23,7 @@
 
             </div>
         @empty
-            <div>No articles</div>
+            <div>No projects found, but you can create one at anytime!</div>
         @endforelse
     </main>
 @endsection
