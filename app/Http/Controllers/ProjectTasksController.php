@@ -8,13 +8,18 @@ use Illuminate\Http\Request;
 
 class ProjectTasksController extends Controller
 {
+    /**
+     * Add a task to the given project
+     * @param Project $project
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function store(Project $project)
     {
 //        if the auth user is not the owner of the project aboard
-        if (auth()->user()->isNot($project->owner))
-        {
-            abort(403);
-        }
+        $this->authorize('update', $project);
+
         request()->validate([
             'body' => 'required',
         ]);
@@ -28,10 +33,7 @@ class ProjectTasksController extends Controller
     {
 
         //if the auth user is not the owner of the project aboard
-        if (auth()->user()->isNot($project->owner))
-        {
-            abort(403);
-        }
+       $this->authorize('update', $project);
 
         request()->validate([
             'body' => 'required'

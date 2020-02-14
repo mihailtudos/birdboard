@@ -49,7 +49,7 @@ class ManageProjectsTest extends TestCase
      /** @test */
     public function a_user_can_create_a_project()
     {   //disable error handling
-        //$this->withoutExceptionHandling();
+        $this->withoutExceptionHandling();
 
         //get a signed in user
         $this->signeIn();
@@ -62,7 +62,8 @@ class ManageProjectsTest extends TestCase
         //the attributes we are working with are going to be saved in an array
         $attributes = [
             'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->sentence,
+            'notes' => 'General notes',
         ];
 
 
@@ -78,6 +79,28 @@ class ManageProjectsTest extends TestCase
 
         //Would I see a the title of a project if I would access /projects
         //$this->get('/projects')->assertSee($attributes['title']);
+
+        $this->get($project->path())
+            ->assertSee($attributes['title'])
+            ->assertSee($attributes['description'])
+            ->assertSee($attributes['notes']);
+    }
+    /** @test */
+    public function a_user_can_update_a_project()
+    {
+        //get an authenticated user
+        $this->signeIn();
+
+        $this->withoutExceptionHandling();
+
+        //given we have a project
+        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+
+        $this->patch($project->path(),[
+            'notes' => 'general notes'
+        ])->assertRedirect($project->path());
+
+        $this->assertDatabaseHas('projects', ['notes' => 'general notes']);
     }
 
     /** @test */
@@ -111,9 +134,21 @@ class ManageProjectsTest extends TestCase
         //and then we try to visit that project
         //check or assert if the status of the request would be 403
         $this->get($project->path())->assertStatus(403);
+    }
+    /** @test */
+    public function an_authenticated_user_cannot_update_the_projects_of_others()
+    {
+        //$this->withoutExceptionHandling();
+        //grab an authenticated user
+        $this->signeIn();
 
+        //grab a random project not created by the signed in user to make sure he cannot view it
 
+        $project = factory('App\Project')->create();
 
+        //and then we try to visit that project
+        //check or assert if the status of the request would be 403
+        $this->patch($project->path(), [])->assertStatus(403);
     }
 
     /** @test */
