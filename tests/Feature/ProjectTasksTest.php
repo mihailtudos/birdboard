@@ -6,6 +6,7 @@ use App\Project;
 use App\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Facades\Tests\Setup\ProjectFactory;
 use Tests\TestCase;
 
 class ProjectTasksTest extends TestCase
@@ -16,13 +17,16 @@ class ProjectTasksTest extends TestCase
     public function a_project_can_have_tasks()
     {
         //sign in a user
-        $this->signeIn();
+        //$this->signeIn();
 
         //given we have a project created by the signed in user
         //when end point (link) is hit it shoudl successfully add a task to the project
-        $project = auth()->user()->projects()->create(factory('App\Project')->raw());
+        //$project = auth()->user()->projects()->create(factory('App\Project')->raw());
 
-        $this->post($project->path() .'/tasks', ['body' => 'Test']);
+        $project = ProjectFactory::create();
+
+        $this->actingAs($project->owner)
+            ->post($project->path() .'/tasks', ['body' => 'Test']);
 
         //accessing project's page we should see the 'Test task' task
         $this->get($project->path())->assertSee('Test');
@@ -34,12 +38,9 @@ class ProjectTasksTest extends TestCase
     {
 
         $this->signeIn();
+        $project = ProjectFactory::withTask(1)->create();
 
-        $project = factory(Project::class)->create();
-
-        $task = $project->addTask('Task Task');
-
-        $this->patch($task->path(), ['body' => 'updated'])->assertStatus(403);
+        $this->patch($project->tasks[0]->path(), ['body' => 'updated'])->assertStatus(403);
 
         $this->assertDatabaseMissing('tasks', ['body' => 'updated']);
 
@@ -49,20 +50,21 @@ class ProjectTasksTest extends TestCase
     /** @test */
     public function a_task_can_be_updated()
     {
-        $this->signeIn();
+        //create a project object
+        $project =ProjectFactory::withtask(1)->create();
 
-        $project = auth()->user()->projects()
-            ->create(factory(Project::class)->raw());
 
-        $task = $project->addTask('Task task');
+        //assign the auth user to the project
+        $this->actingAs($project->owner)
+            ->patch($project->tasks[0]->path(),
+            [
+                'body' => 'changed updated',
+                'completed' => true,
+            ]);
 
-        $this->patch($task->path(), [
-            'body' => 'Task updated',
-            'completed' => true,
-        ]);
 
         $this->assertDatabaseHas('tasks', [
-            'body' => 'Task updated',
+            'body' => 'changed updated',
             'completed' => true
             ]);
     }
@@ -70,13 +72,16 @@ class ProjectTasksTest extends TestCase
     /** @test */
     public function a_task_require_a_body()
     {
-        $this->signeIn();
-
-        $project = auth()->user()->projects()->create(factory(Project::class)->raw());
+//        $this->signeIn();
+//
+//        $project = auth()->user()->projects()->create(factory(Project::class)->raw());
+        $project=ProjectFactory::create();
 
         $attributes = factory(Task::class)->raw(['body'=>'']);
 
-        $this->post($project->path() .'/tasks', $attributes)->assertSessionHasErrors('body');
+        $this->actingAs($project->owner)
+            ->post($project->path() .'/tasks', $attributes)
+            ->assertSessionHasErrors('body');
 
     }
 

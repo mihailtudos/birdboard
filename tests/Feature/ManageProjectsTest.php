@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Project;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Facades\Tests\Setup\ProjectFactory;
 use Tests\TestCase;
 
 class ManageProjectsTest extends TestCase
@@ -49,7 +50,6 @@ class ManageProjectsTest extends TestCase
      /** @test */
     public function a_user_can_create_a_project()
     {   //disable error handling
-        $this->withoutExceptionHandling();
 
         //get a signed in user
         $this->signeIn();
@@ -89,33 +89,34 @@ class ManageProjectsTest extends TestCase
     public function a_user_can_update_a_project()
     {
         //get an authenticated user
-        $this->signeIn();
-
-        $this->withoutExceptionHandling();
+        //$this->signeIn();
 
         //given we have a project
-        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+        //$project = factory('App\Project')->create(['owner_id' => auth()->id()]);
 
-        $this->patch($project->path(),[
-            'notes' => 'general notes'
-        ])->assertRedirect($project->path());
+        $project = ProjectFactory::create();
 
-        $this->assertDatabaseHas('projects', ['notes' => 'general notes']);
+        $this->actingAs($project->owner)
+            ->patch($project->path(), $attributes = ['notes' => 'general notes'])
+            ->assertRedirect($project->path());
+
+        $this->assertDatabaseHas('projects', $attributes);
     }
 
     /** @test */
     public function a_user_can_view_their_projects()
     {
         //get an authenticated user
-        $this->signeIn();
-
-        $this->withoutExceptionHandling();
+        //$this->signeIn();
 
         //given we have a project
-        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+        //$project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+
+        $project = ProjectFactory::create();
 
         //would we be able to access it
-        $this->get($project->path())
+        $this->actingAs($project->owner)
+            ->get($project->path())
             ->assertSee($project->title)
             ->assertSee($project->description);
     }
@@ -123,7 +124,6 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function an_authenticated_user_cannot_view_the_projects_of_others()
     {
-        //$this->withoutExceptionHandling();
         //grab an authenticated user
         $this->signeIn();
 
@@ -135,10 +135,10 @@ class ManageProjectsTest extends TestCase
         //check or assert if the status of the request would be 403
         $this->get($project->path())->assertStatus(403);
     }
+
     /** @test */
     public function an_authenticated_user_cannot_update_the_projects_of_others()
     {
-        //$this->withoutExceptionHandling();
         //grab an authenticated user
         $this->signeIn();
 

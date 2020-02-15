@@ -12,7 +12,11 @@ abstract class TestCase extends BaseTestCase
     {
         //get a signed in user
 
-        return  $this->actingAs($user ?: factory('App\User')->create());
+        $user = $user ?: factory('App\User')->create();
+
+        $this->actingAs($user);
+
+        return $user;
     }
     public function getProject($project = null)
     {
@@ -20,4 +24,6 @@ abstract class TestCase extends BaseTestCase
 
         return  ($project ?: factory('App\Project')->create());
     }
+
+
 }
