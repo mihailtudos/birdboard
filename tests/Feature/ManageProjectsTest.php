@@ -19,7 +19,7 @@ class ManageProjectsTest extends TestCase
     {
         $attributes = factory('App\Project')->raw();
         //if I submit a post request with to the specified address and send the attributes
-        $this->post('/projects', $attributes)->assertRedirect('login');
+        $this->post('/projects')->assertRedirect('/login');
     }
 
     /** @test */
@@ -28,6 +28,13 @@ class ManageProjectsTest extends TestCase
         $attributes = factory('App\Project')->raw();
         //if I submit a post request with to the specified address and send the attributes
         $this->get('/projects/create', $attributes)->assertRedirect('login');
+    }
+    /** @test */
+    public function guests_cannot_edit_projects()
+    {
+        $attributes = factory('App\Project')->raw();
+        //if I submit a post request with to the specified address and send the attributes
+        $this->get('/projects/edit', $attributes)->assertRedirect('login');
     }
 
     /** @test */
@@ -97,12 +104,27 @@ class ManageProjectsTest extends TestCase
         $project = ProjectFactory::create();
 
         $this->actingAs($project->owner)
-            ->patch($project->path(), $attributes = ['notes' => 'general notes'])
+            ->patch($project->path(), $attributes = ['title' => 'Changed', 'description' => 'Changed', 'notes' => 'general notes'])
             ->assertRedirect($project->path());
+
+        $this->get($project->path() .'/edit')->assertOk();
 
         $this->assertDatabaseHas('projects', $attributes);
     }
 
+    /** @test */
+    public function a_user_can_update_a_projects_general_notes()
+    {
+        $project = ProjectFactory::create();
+
+        $this->actingAs($project->owner)
+            ->patch($project->path(), $attributes = ['notes' => 'general notes'])
+            ->assertRedirect($project->path());
+
+        $this->get($project->path() .'/edit')->assertOk();
+
+        $this->assertDatabaseHas('projects', $attributes);
+    }
     /** @test */
     public function a_user_can_view_their_projects()
     {

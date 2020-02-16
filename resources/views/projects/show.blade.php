@@ -7,7 +7,7 @@
             <p class="text-gray-600 text-lg font-normal" >
                 <a href="/projects">My Projects</a>  / {{ $project->title }}
             </p>
-            <a class="button" href="/projects/create">New project</a>
+            <a class="button" href="{{$project->path().'/edit'}}">Edit project</a>
         </div>
     </header>
 
@@ -51,9 +51,16 @@
                     <form action="{{ $project->path() }}" method="post" class="mt-5">
                         @csrf
                         @method('PATCH')
-                        <textarea name="notes" class="card mb-3 w-full" style="min-height: 200px" placeholder="Space for your notes.">{{ $project->notes }}</textarea>
+                        <textarea name="notes" class="card mb-3 w-full" style="min-height: 200px" maxlength="255" placeholder="Space for your notes.">{{ $project->notes }}</textarea>
                         <button type="submit" class="button">Save</button>
                     </form>
+                    @if($errors->any())
+                        <div class="field mt-6">
+                            @foreach($errors->all() as $error)
+                                <li class="text-sm text-red-500">{{$error}}</li>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
             </div>
