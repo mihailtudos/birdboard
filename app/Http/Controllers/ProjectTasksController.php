@@ -37,15 +37,22 @@ class ProjectTasksController extends Controller
         //if the auth user is not the owner of the project aboard
        $this->authorize('update', $project);
 
-        request()->validate([
+        $attributes = request()->validate([
             'body' => 'required'
         ]);
 
-        $task->update([ 'body' => request('body')]);
+        $task->update($attributes);
 
-        if (request()->has('completed')){
-            $task->complete();
-        }
+        $method = request('completed') ? 'complete' : 'incomplete';
+
+        $task->$method();
+
+        //replaced by the above
+//        if (request('completed')){
+//            $task->complete();
+//        } else {
+//            $task->incomplete();
+//        }
 
         return redirect($project->path());
 
