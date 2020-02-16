@@ -33,11 +33,7 @@ class ProjectsController extends Controller
     public function store()
     {
         //validate
-        $attributes = request()->validate([
-            'title' => 'required',
-            'description' => 'required|max:200',
-            'notes' => 'min:3|max:255',
-        ]);
+        $attributes = $this->validateRequest();
 
         //persist
 
@@ -53,9 +49,33 @@ class ProjectsController extends Controller
         //if the user is not the project owner he cannot see the project
         $this->authorize('update', $project);
 
-        $project->update(\request(['notes']));
+        $attributes = $this->validateRequest();
+
+        $project->update($attributes);
 
         return redirect($project->path());
+    }
+
+    public function edit(Project $project)
+    {
+        //if the user is not the project owner he cannot see the project
+        $this->authorize('update', $project);
+
+        return view('projects.edit', compact('project'));
+
+    }
+
+    /**
+     * @return array
+     */
+
+    protected function validateRequest()
+    {
+        return $attributes = request()->validate([
+            'title' => 'sometimes|required',
+            'description' => 'sometimes|required|max:200',
+            'notes' => 'nullable|max:255',
+        ]);
     }
 
 
