@@ -59,6 +59,26 @@ class ProjectTasksTest extends TestCase
             ->patch($project->tasks[0]->path(),
             [
                 'body' => 'changed updated',
+            ]);
+
+
+        $this->assertDatabaseHas('tasks', [
+            'body' => 'changed updated',
+            ]);
+    }
+
+    /** @test */
+    public function a_task_can_be_completed()
+    {
+        //create a project object
+        $project =ProjectFactory::withtask(1)->create();
+
+
+        //assign the auth user to the project
+        $this->actingAs($project->owner)
+            ->patch($project->tasks[0]->path(),
+            [
+                'body' => 'changed updated',
                 'completed' => true,
             ]);
 
@@ -68,6 +88,38 @@ class ProjectTasksTest extends TestCase
             'completed' => true
             ]);
     }
+    /** @test */
+    public function a_task_can_be_incompleted()
+    {
+        $this->withoutExceptionHandling();
+
+        //create a project object
+        $project =ProjectFactory::withtask(1)->create();
+
+        //assign the auth user to the project
+        $this->actingAs($project->owner)
+            ->patch($project->tasks[0]->path(),
+            [
+                'body' => 'changed updated',
+                'completed' => true,
+            ]);
+
+        //assign the auth user to the project
+        $this->actingAs($project->owner)
+            ->patch($project->tasks[0]->path(),
+            [
+                'body' => 'changed updated',
+                'completed' => false,
+            ]);
+
+
+        $this->assertDatabaseHas('tasks', [
+            'body' => 'changed updated',
+            'completed' => false
+            ]);
+    }
+
+
 
     /** @test */
     public function a_task_require_a_body()

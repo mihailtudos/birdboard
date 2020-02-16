@@ -27,10 +27,22 @@ class Project extends Model
     public function addTask($body)
     {
         return $this->tasks()->create(['body'=>$body]);
+
     }
 
     public function activity()
     {
         return $this->hasMany(Activity::class);
+    }
+
+    /**
+     * the activity feed for the project
+     * @param $description
+     */
+
+    public function recordActivity($description){
+
+        $this->activity()->create(compact('description'));
+
     }
 }
