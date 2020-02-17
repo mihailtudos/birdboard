@@ -43,7 +43,7 @@ class TriggerActivityTest extends TestCase
 
         $this->assertCount(2, $project->activity);
 
-        $this->assertEquals('created task', $project->activity->last()->description);
+        $this->assertEquals('created_task', $project->activity->last()->description);
 
     }
 
@@ -61,7 +61,7 @@ class TriggerActivityTest extends TestCase
 
         $this->assertCount(3, $project->activity);
 
-        $this->assertEquals('completed task', $project->activity->last()->description);
+        $this->assertEquals('completed_task', $project->activity->last()->description);
 
     }
     /** @test*/
@@ -85,7 +85,7 @@ class TriggerActivityTest extends TestCase
 
         $project->refresh();
         $this->assertCount(4, $project->activity);
-        $this->assertEquals('uncompleted task', $project->activity->last()->description);
+        $this->assertEquals('uncompleted_task', $project->activity->last()->description);
 
     }
 

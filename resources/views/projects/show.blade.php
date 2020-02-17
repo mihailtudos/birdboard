@@ -75,7 +75,7 @@
 
                     <div class="text-gray-500">{{ $project->description }}</div>
                 </div>
-
+                @include('projects.activity.activity_list')
             </div>
             </div>
         </div>
