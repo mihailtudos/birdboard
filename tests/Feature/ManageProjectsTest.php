@@ -101,6 +101,7 @@ class ManageProjectsTest extends TestCase
         //given we have a project
         //$project = factory('App\Project')->create(['owner_id' => auth()->id()]);
 
+        $this->withoutExceptionHandling();
         $project = ProjectFactory::create();
 
         $this->actingAs($project->owner)
