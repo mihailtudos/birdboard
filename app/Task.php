@@ -3,15 +3,21 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class Task extends Model
 {
+    use RecordsActivity;
+
     protected $guarded = [];
+
+    protected $touches = ['project'];
 
     protected  $casts = [
         'completed' => 'boolean'
     ];
-    protected $touches = ['project'];
+
+   protected static $recordableEvents = ['created', 'deleted'];
 
 
     public function complete()
@@ -36,29 +42,6 @@ class Task extends Model
     public function path()
     {
        return "/projects/{$this->project->id}/tasks/{$this->id}";
-    }
-
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
-     */
-    public function activity()
-    {
-        return $this->morphMany(Activity::class, 'subject')->latest();
-    }
-
-    /**
-     * the activity feed for the project
-     * @param $description
-     */
-
-    public function recordActivity($description){
-
-        $this->activity()->create([
-            'project_id' => $this->project->id,
-            'description'=> $description,
-        ]);
-
     }
 
 }
