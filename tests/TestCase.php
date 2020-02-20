@@ -8,7 +8,7 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    public function signeIn($user = null)
+    public function signIn($user = null)
     {
         //get a signed in user
 

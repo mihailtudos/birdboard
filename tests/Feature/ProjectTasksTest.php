@@ -37,7 +37,7 @@ class ProjectTasksTest extends TestCase
     public function only_the_owner_of_the_project_can_update_the_tasks()
     {
 
-        $this->signeIn();
+        $this->signIn();
         $project = ProjectFactory::withTask(1)->create();
 
         $this->patch($project->tasks[0]->path(), ['body' => 'updated'])->assertStatus(403);
@@ -140,7 +140,7 @@ class ProjectTasksTest extends TestCase
     /** @test */
     public function only_the_owner_of_the_project_can_add_tasks()
     {
-        $this->signeIn();
+        $this->signIn();
 
         //somebody's project
         $project = factory(Project::class)->create();
