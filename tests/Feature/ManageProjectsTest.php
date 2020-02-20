@@ -110,6 +110,21 @@ class ManageProjectsTest extends TestCase
     }
 
     /** @test */
+    public function a_user_can_see_all_project_they_were_invited_to()
+    {
+        //given we are signed in
+        $user = $this->signIn();
+        //and we've been invited to a project that was not created by the signed in user (member not owner)
+
+        $project = ProjectFactory::create();
+        $project->invite($user);
+
+        //when the user visit the dashboard the project should be present
+        $this->get('/projects')->assertSee($project->title);
+
+    }
+
+    /** @test */
     public function a_user_can_delete_a_project()
     {
         $project = ProjectFactory::create();

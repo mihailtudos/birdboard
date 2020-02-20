@@ -23,7 +23,7 @@ class InvitationsTest extends TestCase
 
         //factoring a project
         $project = ProjectFactory::create();
-        dd($project -> owner);
+
         //project(owner) invites new user
         $project->invite($newUser = factory(User::class)->create());
 
