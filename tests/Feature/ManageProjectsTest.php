@@ -29,6 +29,22 @@ class ManageProjectsTest extends TestCase
         //if I submit a post request with to the specified address and send the attributes
         $this->get('/projects/create', $attributes)->assertRedirect('login');
     }
+
+    /** @test */
+    public function unauthorised_users_cannot_delete_a_project()
+    {
+        $project = ProjectFactory::create();
+
+        $this->delete($project->path())
+            ->assertRedirect('/login');
+
+        $this->signIn();
+
+        $this->delete($project->path())->assertStatus(403);
+
+
+    }
+
     /** @test */
     public function guests_cannot_edit_projects()
     {
@@ -59,7 +75,7 @@ class ManageProjectsTest extends TestCase
     {   //disable error handling
 
         //get a signed in user
-        $this->signeIn();
+        $this->signIn();
 
         //assert if the user can access the project create page and that the page actually exist
         $this->get('/projects/create')->assertStatus(200);
@@ -92,6 +108,19 @@ class ManageProjectsTest extends TestCase
             ->assertSee($attributes['description'])
             ->assertSee($attributes['notes']);
     }
+
+    /** @test */
+    public function a_user_can_delete_a_project()
+    {
+        $project = ProjectFactory::create();
+
+        $this->actingAs($project->owner)
+            ->delete($project->path())
+            ->assertRedirect('/projects');
+
+        $this->assertDatabaseMissing('projects', $project->only('id'));
+    }
+
     /** @test */
     public function a_user_can_update_a_project()
     {
@@ -148,7 +177,7 @@ class ManageProjectsTest extends TestCase
     public function an_authenticated_user_cannot_view_the_projects_of_others()
     {
         //grab an authenticated user
-        $this->signeIn();
+        $this->signIn();
 
         //grab a random project not created by the signed in user to make sure he cannot view it
 
@@ -163,7 +192,7 @@ class ManageProjectsTest extends TestCase
     public function an_authenticated_user_cannot_update_the_projects_of_others()
     {
         //grab an authenticated user
-        $this->signeIn();
+        $this->signIn();
 
         //grab a random project not created by the signed in user to make sure he cannot view it
 
@@ -177,7 +206,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_project_requires_a_title()
     {
-        $this->signeIn();
+        $this->signIn();
         $attributes = factory('App\Project')->raw(['title'=>'']);
         //if I submit a post request with to the specified address and send the attributes
         $this->post('/projects', $attributes)->assertSessionHasErrors('title');
@@ -187,7 +216,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_project_requires_a_description()
     {
-        $this->signeIn();
+        $this->signIn();
         $attributes = factory('App\Project')->raw(['description'=>'']);
         //if I submit a post request with to the specified address and send the attributes
         $this->post('/projects', $attributes)->assertSessionHasErrors('description');
