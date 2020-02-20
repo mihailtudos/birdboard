@@ -95,5 +95,4 @@ class ProjectsController extends Controller
         ]);
     }
 
-
 }

@@ -18,8 +18,7 @@ class ProjectTasksController extends Controller
      */
     public function store(Project $project)
     {
-
-//        if the auth user is not the owner of the project aboard
+        //if the auth user is not the owner of the project aboard
         $this->authorize('update', $project);
 
         request()->validate([
