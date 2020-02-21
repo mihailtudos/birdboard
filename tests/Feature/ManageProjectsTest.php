@@ -182,6 +182,8 @@ class ManageProjectsTest extends TestCase
         $project = ProjectFactory::create();
 
         //would we be able to access it
+
+
         $this->actingAs($project->owner)
             ->get($project->path())
             ->assertSee($project->title)
