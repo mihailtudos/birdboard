@@ -33,16 +33,22 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function unauthorised_users_cannot_delete_a_project()
     {
+        //unauthorised users cannot delete a project
         $project = ProjectFactory::create();
 
         $this->delete($project->path())
             ->assertRedirect('/login');
 
-        $this->signIn();
+        //a signed in user cannot delete a project which is not his
+        $user = $this->signIn();
 
         $this->delete($project->path())->assertStatus(403);
 
+        //a member of a project cannot delete a project
+        //a user cen delete a project only if he has management privileges (project policy + controller->destroy method)
+        $project->invite($user);
 
+        $this->actingAs($user)->delete($project->path())->assertStatus(403);
     }
 
     /** @test */
@@ -89,20 +95,20 @@ class ManageProjectsTest extends TestCase
             'notes' => 'General notes',
         ];
 
+        //$attributes = factory(Project::class)->raw(['owner_id' => auth()->id()]);
 
         //if I submit a post request with to the specified address and send the attributes
         $response = $this->post('/projects', $attributes);
 
         $project = Project::where($attributes)->first();
 
-         $response->assertRedirect($project->path());
+        $response->assertRedirect($project->path());
 
         //I should have a database record containing the attributes send at previous step
         $this->assertDatabaseHas('projects', $attributes);
 
         //Would I see a the title of a project if I would access /projects
         //$this->get('/projects')->assertSee($attributes['title']);
-
         $this->get($project->path())
             ->assertSee($attributes['title'])
             ->assertSee($attributes['description'])
