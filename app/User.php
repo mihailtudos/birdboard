@@ -41,4 +41,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Project::class, 'owner_id')->latest('updated_at');
     }
+
+    public function availableProjects()
+    {
+        //retruns the projects where the owner_id is equal the id of signed in users or(and) the projects for which the user id was found in members table
+        return Project::where('owner_id', $this->id)->orWhereHas('members', function ($query){
+            $query->where('user_id', $this->id);
+        })->get();
+    }
 }

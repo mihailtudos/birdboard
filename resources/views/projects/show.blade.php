@@ -2,12 +2,20 @@
 
 @section('content')
 
-    <header class="flex items-center mb-3 py-3">
-        <div class="flex justify-between  items-end w-full">
+    <header class="flex items-center mb-3 pb-4">
+        <div class="flex justify-between items-end w-full">
             <p class="text-gray-600 text-lg font-normal" >
                 <a href="/projects">My Projects</a>  / {{ $project->title }}
             </p>
-            <a class="button" href="{{$project->path().'/edit'}}">Edit project</a>
+            <div class="flex items-center">
+
+                @foreach($project->members as $member)
+                    <img class="rounded-full w-8 mr-2" src="{{ gravatar_url($member->email) }}" alt="{{ $member->name }}'s profile image">
+                @endforeach
+                    <img class="rounded-full w-8 mr-2" src="{{ gravatar_url($project->owner->email )}}" alt="{{ $project->owner->name }}'s owner profile image">
+
+                    <a class="button ml-4" href="{{$project->path().'/edit'}}">Edit project</a>
+            </div>
         </div>
     </header>
 

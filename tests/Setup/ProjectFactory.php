@@ -21,11 +21,18 @@ class ProjectFactory
         return $this;
     }
 
+    /**
+     * Set the owner of the new project.
+     *
+     * @param  User $user
+     * @return $this
+     */
+
     public function ownedBy($user)
     {
         $this->user = $user;
 
-        return $user;
+        return $this;
     }
 
     public function create()

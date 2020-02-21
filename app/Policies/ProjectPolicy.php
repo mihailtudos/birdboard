@@ -13,7 +13,7 @@ class ProjectPolicy
 
     public function update(User $user, Project $project)
     {
-        //if the auth user is not the owner of the project aboard
-        return $user->is($project->owner);
+        //a project can be updated if is the owner of the project or a project team member
+        return $user->is($project->owner) || $project->members->contains($user);
     }
 }

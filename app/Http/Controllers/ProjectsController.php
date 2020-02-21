@@ -12,8 +12,7 @@ class ProjectsController extends Controller
 
     public function index()
     {
-        $projects = auth()->user()->projects;
-
+        $projects = auth()->user()->availableProjects();
 
         return view('projects.index', compact('projects'));
     }
@@ -94,6 +93,5 @@ class ProjectsController extends Controller
             'notes' => 'nullable|max:255',
         ]);
     }
-
 
 }
