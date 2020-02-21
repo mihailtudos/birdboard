@@ -62,32 +62,21 @@
                         <textarea name="notes" class="card mb-3 w-full" style="min-height: 200px" maxlength="255" placeholder="Space for your notes.">{{ $project->notes }}</textarea>
                         <button type="submit" class="button">Save</button>
                     </form>
-                    @if($errors->any())
-                        <div class="field mt-6">
-                            @foreach($errors->all() as $error)
-                                <li class="text-sm text-red-500">{{$error}}</li>
-                            @endforeach
-                        </div>
-                    @endif
                 </div>
 
             </div>
             {{-- Project card section --}}
             <div class="lg:w-1/4 px-3">
-                <div class="card" style="height: 250px">
-                    <h3 class="font-normal text-xl mb-6 py-4 -ml-5 border-l-4 border-green-500 pl-4">
-                        <a class="no-underline font-bold " href="{{$project->path()}}">
-                            {{ Str::limit($project->title, 25) }}
-                        </a>
-                    </h3>
-
-                    <div class="text-gray-500">{{ $project->description }}</div>
-                </div>
+                @include('projects.card')
                 @include('projects.activity.activity_list')
+
+                {{--Project policy--}}
+                @can('manage', $project)
+                    @include('projects.invite')
+                @endcan
             </div>
             </div>
         </div>
-
     </main>
     <a class="button" href="/projects"> Go Back</a>
 

@@ -16,9 +16,19 @@ class InvitationsTest extends TestCase
     /** @test*/
     public function only_the_owners_of__the_projects_can_invite_members()
     {
+        $project = ProjectFactory::create();
+
+        $user = factory(User::class)->create();
+
         //if you are not the owner of the project you cannot add other members
-        $this->actingAs(factory(User::class)->create())
-            ->post(ProjectFactory::create()->path() .'/invitations')
+        $this->actingAs($user)
+            ->post( $project->path() . '/invitations')
+            ->assertStatus(403);
+
+        $project->invite($user);
+
+        $this->actingAs($user)
+            ->post( $project->path() .'/invitations')
             ->assertStatus(403);
     }
 
