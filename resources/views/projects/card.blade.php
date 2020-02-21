@@ -7,13 +7,14 @@
 
         <div class="text-gray-500 mb-4 flex-1 overflow-scroll">{{ $project->description }}</div>
 
-        <footer>
-            <form class="text-right items-bottom" action="{{$project->path()}}" method="post">
-                @csrf
-                @method('DELETE')
-                <button class="text-xs text-red-500 font-bold" type="submit">Delete</button>
-            </form>
-        </footer>
-
+        @can('manage', $project)
+            <footer>
+                <form class="text-right items-bottom" action="{{$project->path()}}" method="post">
+                    @csrf
+                    @method('DELETE')
+                    <button class="text-xs text-red-500 font-bold" type="submit">Delete</button>
+                </form>
+            </footer>
+        @endcan
     </div>
 

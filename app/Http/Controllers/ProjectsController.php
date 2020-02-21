@@ -76,7 +76,8 @@ class ProjectsController extends Controller
 
     public function destroy(Project $project)
     {
-        $this->authorize('update', $project);
+        //a user cen delete a project only if he has management privileges (project policy)
+        $this->authorize('manage', $project);
         $project->delete();
         return redirect('/projects');
     }
