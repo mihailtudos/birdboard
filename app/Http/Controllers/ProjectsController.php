@@ -30,6 +30,10 @@ class ProjectsController extends Controller
         return view('/projects.create');
     }
 
+    /**
+     * @return mixed
+     *
+     */
     public function store()
     {
         //validate
@@ -39,7 +43,9 @@ class ProjectsController extends Controller
 
         $project = auth()->user()->projects()->create($attributes);
 
-
+        if (request()->wantsJson()){
+            return ['message' => $project->path()];
+        }
         //redirect
         return redirect( $project->path());
     }
