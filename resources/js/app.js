@@ -22,6 +22,7 @@ import VModal from 'vue-js-modal';
 Vue.use(VModal);
 
 Vue.component('new-project-modal', require('./components/NewProjectModal.vue').default)
+Vue.component('dropdown', require('./components/DropDown.vue').default)
 
 const app = new Vue({
     el: '#app'

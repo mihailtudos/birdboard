@@ -30,25 +30,29 @@ class ProjectsController extends Controller
         return view('/projects.create');
     }
 
+
     /**
-     * @return mixed
+     * Persist a new project.
      *
+     * @return mixed
      */
     public function store()
     {
-        //validate
-        $attributes = $this->validateRequest();
+        $project = auth()->user()->projects()->create($this->validateRequest());
 
-        //persist
+        if (request()->has('tasks')){
+            foreach (request('tasks') as $task){
+                $project->addTask($task['body']);
+            }
+        }
 
-        $project = auth()->user()->projects()->create($attributes);
-
-        if (request()->wantsJson()){
+        if (request()->wantsJson()) {
             return ['message' => $project->path()];
         }
-        //redirect
-        return redirect( $project->path());
+
+        return redirect($project->path());
     }
+
 
     /**
      *
@@ -88,16 +92,18 @@ class ProjectsController extends Controller
         return redirect('/projects');
     }
 
+
     /**
+     * Validate the request attributes.
+     *
      * @return array
      */
-
     protected function validateRequest()
     {
-        return $attributes = request()->validate([
+        return request()->validate([
             'title' => 'sometimes|required',
-            'description' => 'sometimes|required|max:200',
-            'notes' => 'nullable|max:255',
+            'description' => 'sometimes|required',
+            'notes' => 'nullable'
         ]);
     }
 

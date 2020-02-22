@@ -18,7 +18,7 @@
 
                     <div class="mb-4">
                         <label for="description" class="text-sm block mb-2">Description</label>
-                        <textarea name="description" id="description" class="border border-gray-500 rounded p-2 text-xs block w-full" rows="7" v-model="form.description" required></textarea>
+                        <textarea name="description" id="description" class="border border-gray-500 rounded p-2 text-xs block w-full" rows="7" v-model="form.description" ></textarea>
                     </div>
 
                 </div>
@@ -26,7 +26,7 @@
 
                     <div class="mb-4">
                         <label class="text-sm block mb-2">Add some tasks</label>
-                        <input type="text"  class="border border-gray-500 rounded mb-2 p-2 text-xs block w-full" placeholder="A task for this project" v-for="task in form.tasks" v-model="task.value">
+                        <input type="text"  class="border border-gray-500 rounded mb-2 p-2 text-xs block w-full" placeholder="A task for this project" v-for="task in form.tasks" v-model="task.body">
                     </div>
 
                     <button type="button" class="inline-flex items-center text-xs" @click="addTask">
@@ -42,8 +42,8 @@
                 </div>
             </div>
             <footer class="flex justify-end">
-                <button  class="rounded-lg border p-4 bg-red-700 mr-3 text-white" @click="$modal.hide('new-project')">Cancel</button>
-                <button class="button" type="submit">Create</button>
+                <button type="button" class="rounded-lg border p-4 bg-red-700 mr-3 text-white" @click="$modal.hide('new-project')">Cancel</button>
+                <button type="submit" class="button" >Create</button>
             </footer>
         </form>
 
@@ -51,20 +51,18 @@
 </template>
 
 <script>
-    let options = {
-        responseType: "application/json"
-    };
+    import  BirdboardForm from './BirdboardForm';
 
     export default {
         data() {
             return{
-                form: {
+                form: new BirdboardForm ({
                     title: '',
                     description: '',
                     tasks: [
-                        {value: ''},
+                        {body: ''},
                     ]
-                },
+                }),
                 errors: {},
             };
         },
@@ -74,11 +72,14 @@
                 this.form.tasks.push({value: ''});
             },
             async submit() {
-                try {
-                   location = (await axios.post('/projects', this.form)).data.message;
-                } catch (error) {
-                    this.errors = error.response.data.errors;
-                }
+                this.form.submit('projects')
+                    .then(response => location = response.data.message);
+
+                // try {
+                //    location = (await axios.post('/projects', this.form)).data.message;
+                // } catch (error) {
+                //     this.errors = error.response.data.errors;
+                // }
             }
         }
     }
